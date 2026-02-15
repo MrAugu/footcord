@@ -1,0 +1,19 @@
+{
+  "name": "footcord",
+  "version": "1.0.0",
+  "description": "A discord bot for football.",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrAugu/footcord.git"
+  },
+  "author": "MrAugu <mraugu@yahoo.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrAugu/footcord/issues"
+  },
+  "homepage": "https://github.com/MrAugu/footcord#readme"
+}
