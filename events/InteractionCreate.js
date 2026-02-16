@@ -3,11 +3,11 @@ import slashCommandHandler from "../handlers/slashCommandHandler.js";
 import autocompleteHandler from "../handlers/autocompleteHandler.js";
 
 export default class Ready extends Event {
-	constructor (client) {
+	constructor(client) {
 		super(client, "interactionCreate");
 	}
 
-	async run (interaction) {
+	async run(interaction) {
 		if (interaction.isCommand()) {
 			try {
 				slashCommandHandler(this.client, interaction);

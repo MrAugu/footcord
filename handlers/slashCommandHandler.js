@@ -1,4 +1,4 @@
-export default async function handler (client, interaction) {
+export default async function handler(client, interaction) {
 	const command = client.commands[interaction.commandName];
 
 	if (command) {

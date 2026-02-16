@@ -42,7 +42,7 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 	longs: String,
 	enums: String,
 	defaults: true,
-	oneofs: true,
+	oneofs: true
 });
 
 const serviceProto = grpc.loadPackageDefinition(packageDefinition).DataService;

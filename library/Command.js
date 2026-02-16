@@ -1,14 +1,14 @@
 export default class Command {
-	constructor (client, name) {
+	constructor(client, name) {
 		this.client = client;
 		this.name = name;
 	};
 
-	buildSlashOptions () {
+	buildSlashOptions() {
 		throw Error("Please override the build function for this command.");
 	}
 
-	async run () {
+	async run() {
 		throw Error("Please override the run function for the .");
 	}
 }

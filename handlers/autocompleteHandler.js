@@ -2,9 +2,9 @@ import stringSimilarity from "string-similarity";
 import findCountryByLocale from "../utils/locale.js";
 import { getAutocompleteLeaguesAsync } from "../utils/grpc.js";
 
-export default async function handler (client, interaction) {
+export default async function handler(client, interaction) {
 	if (interaction.commandName === "league") {
-		const leagueNames = client.footballCache.leagues.map(league => `${league.id}/${league.name}${league.country?.name ? (league.name.includes(league.country?.name) ? "" : " - " + league.country?.name || "") : " - World"}`);
+		const leagueNames = client.footballCache.leagues.map(league => `${league.id}/${league.name}${league.country?.name ? (league.name.includes(league.country?.name) ? "" : ` - ${  league.country?.name}` || "") : " - World"}`);
 		const typedValue = interaction.options.getFocused() || findCountryByLocale(interaction.locale);
 
 		try {
