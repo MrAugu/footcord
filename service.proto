@@ -1,0 +1,40 @@
+ syntax = "proto3";
+
+package DataService;
+
+service DataService {
+    rpc GetAutocompleteLeagues (LeagueAutocompleteQuery) returns (LeagueMetadataList);
+    rpc GetLeagueInfo (LeagueQuery) returns (LeagueInfo);
+}
+
+message LeagueAutocompleteQuery {
+    string query = 1;
+    int32 limit = 2;
+}
+
+message LeagueMetadata {
+    string name = 1;
+    int32 id = 2;
+    string country = 3;
+    string type = 4;
+}
+
+message LeagueMetadataList {
+    bool errored = 1;
+    repeated LeagueMetadata league_suggestions = 2;
+    int32 matches = 3;
+}
+
+message LeagueQuery {
+    int32 id = 1;
+}
+
+message LeagueInfo {
+    int32 id = 1;
+    string name = 2;
+    string country = 3;
+    string logo = 4;
+    int32 current = 5;
+    string type = 6;
+    bool errored = 7;
+}
