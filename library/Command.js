@@ -1,9 +1,10 @@
 export default class Command {
-    constructor (name) {
+    constructor (client, name) {
+        this.client = client;
         this.name = name;
     };
 
-    buildSlash () {
+    buildSlashOptions () {
         throw Error("Please override the build function for this command.");
     }
 

@@ -1,5 +1,6 @@
 export default class Event {
-    constructor (name) {
+    constructor (client, name) {
+        this.client = client;
         this.name = name;
     }
 

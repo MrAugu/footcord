@@ -1,15 +1,13 @@
 import Command from "../library/Command.js";
-import { SlashCommandSlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
 export default class Ping extends Command {
-    constructor () {
-        super({
-            name: "ping"
-        });
+    constructor (client) {
+        super(client, "ping");
     }
 
-    buildSlash () {
-        return new SlashCommandSlashCommandBuilder()
+    buildSlashOptions () {
+        return new SlashCommandBuilder()
             .setName("ping")
             .setDescription("pong");
     }
