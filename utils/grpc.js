@@ -19,3 +19,13 @@ export function getLeagueInfoAsync(gRpcClient, id) {
 		});
 	});
 }
+
+export function getAutocompleteTeamsAsync(gRpcClient, query, limit) {
+	return new Promise((resolve, reject) => {
+		gRpcClient.GetAutocompleteTeams({ query, limit }, (error, response) => {
+			if (error) return reject(error);
+
+			return resolve(response);
+		});
+	});
+}

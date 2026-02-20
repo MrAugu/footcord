@@ -4,9 +4,12 @@ package DataService;
 
 service DataService {
     rpc GetAutocompleteLeagues (LeagueAutocompleteQuery) returns (LeagueMetadataList);
+    rpc GetAutocompleteTeams (TeamAutocompleteQuery) returns (TeamsMetadataList);
     rpc GetLeagueInfo (LeagueQuery) returns (LeagueInfo);
 }
 
+
+// League Autocomplete
 message LeagueAutocompleteQuery {
     string query = 1;
     int32 limit = 2;
@@ -25,6 +28,26 @@ message LeagueMetadataList {
     int32 matches = 3;
 }
 
+// Teams Autocomplete
+message TeamAutocompleteQuery {
+    string query = 1;
+    int32 limit = 2;
+}
+
+message TeamMetadata {
+    string name = 1;
+    int32 id = 2;
+    string code = 3;
+    string country = 4;
+}
+
+message TeamsMetadataList {
+    bool errored = 1;
+    repeated TeamMetadata team_suggestions = 2;
+    int32 matches = 3;
+}
+
+// League Info
 message LeagueQuery {
     int32 id = 1;
 }

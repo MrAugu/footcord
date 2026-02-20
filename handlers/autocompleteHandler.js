@@ -1,5 +1,5 @@
 import findCountryByLocale from "../utils/locale.js";
-import { getAutocompleteLeaguesAsync } from "../utils/grpc.js";
+import { getAutocompleteLeaguesAsync, getAutocompleteTeamsAsync } from "../utils/grpc.js";
 
 export default async function handler(client, interaction) {
 	const {commandName} = interaction;
@@ -19,6 +19,23 @@ export default async function handler(client, interaction) {
 			}));
 
 			interaction.respond(leagues).catch(console.error);
+		}   catch (error) {
+			interaction.respond([]).catch(console.error);
+			console.error(error);
+		}
+	}
+
+	if (fullName === "follow-team") {
+		const typedValue = interaction.options.getFocused() || findCountryByLocale(interaction.locale);
+
+		try {
+			const matches = await getAutocompleteTeamsAsync(client.gRpcClient, typedValue, 25).catch(console.error);
+			const teams = matches?.team_suggestions?.map(team => ({
+				name: `${team.name} - ${team.country}`,
+				value: `${team.id}`
+			}));
+
+			interaction.respond(teams).catch(console.error);
 		}   catch (error) {
 			interaction.respond([]).catch(console.error);
 			console.error(error);
