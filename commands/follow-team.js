@@ -18,16 +18,10 @@ export default class FollowTeam extends Command {
 							.setRequired(true)
 							.setAutocomplete(true)
 					)
-					.addBooleanOption(opt =>
-						opt
-							.setName("dm")
-							.setDescription("Subscribe to direct message notifications for this team")
-							.setRequired(false)
-					)
 					.addChannelOption(opt =>
 						opt
 							.setName("channel")
-							.setDescription("Channel where updates will be sent")
+							.setDescription("Channel where match events, lineups, injured and summaries will be sent")
 							.setRequired(false)
 							.addChannelTypes(ChannelType.GuildText)
 					)

@@ -17,16 +17,21 @@ export default class UnfollowLeague extends Command {
 							.setRequired(true)
 							.setAutocomplete(true)
 					)
-					.addBooleanOption(opt =>
+					.addStringOption(opt =>
 						opt
 							.setName("dm")
-							.setDescription("Unsubscribe from direct message league notifications")
-							.setRequired(false)
+							.setDescription("Enable or disable notifications for you")
+							.setRequired(true)
+							.addChoices(
+								{ name: "Disable notifications for direct messages", value: "enable_dm" },
+								{ name: "Disable notifications for a channel in this server", value: "not_enable_dm" }
+							)
 					)
 			);
 	}
 
 	async run(interaction) {
+		console.log("WIP");
 		await interaction.reply("Pong!");
 	}
 }

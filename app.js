@@ -107,6 +107,34 @@ unfollowCommandBuilder = UnfollowLeagueInstance.buildSlashOptions(unfollowComman
 unfollowCommandBuilder = UnfollowTeamInstance.buildSlashOptions(unfollowCommandBuilder);
 slashCommands.push(unfollowCommandBuilder.toJSON());
 
+import NotificationUser from "./commands/notifications-user.js";
+const NotificationUserInstance = new NotificationUser(client);
+
+let notificationCommandBuilder = new SlashCommandBuilder();
+notificationCommandBuilder.setName("notifications")
+	.setDescription("Temporarily enable or disable all notifications for you/your server.");
+
+notificationCommandBuilder = NotificationUserInstance.buildSlashOptions(notificationCommandBuilder);
+slashCommands.push(notificationCommandBuilder.toJSON());
+
+
+let settingsCommandBuilder = new SlashCommandBuilder()
+	.setName("settings")
+	.setDescription("Update notification settings.");
+
+import SettingsStandings from "./commands/settings-standings.js";
+import SettingsSummaries from "./commands/settings-summaries.js";
+import SettingsMatchEvents from "./commands/settings-match-events.js";
+
+const SettingsMatchEventsInstance = new SettingsMatchEvents(client);
+const SettingsStandingsInstance = new SettingsStandings(client);
+const SettingsSummariesInstance = new SettingsSummaries(client);
+
+settingsCommandBuilder = SettingsStandingsInstance.buildSlashOptions(settingsCommandBuilder);
+settingsCommandBuilder = SettingsMatchEventsInstance.buildSlashOptions(settingsCommandBuilder);
+settingsCommandBuilder = SettingsSummariesInstance.buildSlashOptions(settingsCommandBuilder);
+slashCommands.push(settingsCommandBuilder.toJSON());
+
 // Registering Commands
 client.commands[PingInstance.name] = PingInstance;
 client.commands[LagueInstance.name] = LagueInstance;
