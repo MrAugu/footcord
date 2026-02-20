@@ -26,7 +26,7 @@ module.exports = [{
         "brace-style": ["error", "1tbs"],
         "eqeqeq": ["error", "always"],
         "max-len": ["warn", {
-            "code": 120
+            "code": 200
         }],
         "no-console": "off",
         "no-nested-ternary": "warn",

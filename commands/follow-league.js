@@ -18,23 +18,44 @@ export default class FollowLeague extends Command {
 							.setRequired(true)
 							.setAutocomplete(true)
 					)
-					.addBooleanOption(opt =>
-						opt
-							.setName("dm")
-							.setDescription("Subscribe to direct message notifications for this league")
-							.setRequired(false)
-					)
 					.addChannelOption(opt =>
 						opt
 							.setName("channel")
 							.setDescription("Channel where updates will be sent")
-							.setRequired(false)
+							.setRequired(true)
 							.addChannelTypes(ChannelType.GuildText)
 					)
 			);
 	}
 
 	async run(interaction) {
-		await interaction.reply("Pong!");
+		const leagueId = interaction.options.getInteger("name");
+		const channelId = interaction.options.getChannel("channel").id;
+
+		try {
+			const existingFollow = await this.client.sql`SELECT * FROM league_notification_preferences WHERE target_id = ${interaction.guild.id} AND target_type = 'guild' AND leagueid = ${leagueId}`;
+			if (existingFollow.length > 0) return interaction.reply(":x: This server is already following the league. Please unfollow the current league before following a new one.").catch(()=>{});
+		} catch (error) {
+			console.log("ERROR: Database error when checking existing league follow", error);
+
+			return interaction.reply(":warning: Something went wrong when trying to follow the league. Please try again later.").catch(()=>{});
+		}
+
+		try {
+			await this.client.sql`
+		INSERT INTO league_notification_preferences (target_type, target_id, leagueid, standings_frequency, standings_channel, silenced)
+		VALUES ('guild', ${interaction.guild.id}, ${leagueId}, 'daily', ${channelId}, false)
+		`;
+
+			return interaction.reply(":white_check_mark: Successfully followed the league! You will start receiving updates in the selected channel.").catch(()=>{});
+		} catch (error) {
+			console.log("ERROR: Database error when inserting league follow", error);
+
+			return interaction.reply(":warning: Something went wrong when trying to follow the league. Please try again later.").catch(()=>{});
+		}
+
+
+
+		return await interaction.reply("Pong!").catch(()=>{});
 	}
 }

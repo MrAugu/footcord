@@ -72,16 +72,17 @@ const ReadyEventInstance = new ReadyEvent(client);
 import InteractionCreate from "./events/InteractionCreate.js";
 const InteractionCreateInstance = new InteractionCreate(client);
 
-// Top Level Commands
+// Ping Command
 import Ping from "./commands/ping.js";
 const PingInstance = new Ping(client);
 slashCommands.push(PingInstance.buildSlashOptions().toJSON());
 
+// League Command
 import League from "./commands/league.js";
 const LagueInstance = new League(client);
 slashCommands.push(LagueInstance.buildSlashOptions().toJSON());
 
-// Subcommand Reunions
+// Follow Commands
 import FollowLeague from "./commands/follow-league.js";
 import FollowTeam from "./commands/follow-team.js";
 const FollowLeagueInstance = new FollowLeague(client);
@@ -95,7 +96,8 @@ followCommandBuilder = FollowLeagueInstance.buildSlashOptions(followCommandBuild
 followCommandBuilder = FollowTeamInstance.buildSlashOptions(followCommandBuilder);
 slashCommands.push(followCommandBuilder.toJSON());
 
-import UnfollowLeague from "./commands/unfollow-leagues.js";
+// Unfollow Commands
+import UnfollowLeague from "./commands/unfollow-league.js";
 import UnfollowTeam from "./commands/unfollow-team.js";
 const UnfollowLeagueInstance = new UnfollowLeague(client);
 const UnfollowTeamInstance = new UnfollowTeam(client);
@@ -107,17 +109,21 @@ unfollowCommandBuilder = UnfollowLeagueInstance.buildSlashOptions(unfollowComman
 unfollowCommandBuilder = UnfollowTeamInstance.buildSlashOptions(unfollowCommandBuilder);
 slashCommands.push(unfollowCommandBuilder.toJSON());
 
+// Notification Commands
 import NotificationUser from "./commands/notifications-user.js";
+import NotificationsServer from "./commands/notifications-server.js";
 const NotificationUserInstance = new NotificationUser(client);
+const NotificationServerInstance = new NotificationsServer(client);
 
 let notificationCommandBuilder = new SlashCommandBuilder();
 notificationCommandBuilder.setName("notifications")
 	.setDescription("Temporarily enable or disable all notifications for you/your server.");
 
 notificationCommandBuilder = NotificationUserInstance.buildSlashOptions(notificationCommandBuilder);
+notificationCommandBuilder = NotificationServerInstance.buildSlashOptions(notificationCommandBuilder);
 slashCommands.push(notificationCommandBuilder.toJSON());
 
-
+// Settings Commands
 let settingsCommandBuilder = new SlashCommandBuilder()
 	.setName("settings")
 	.setDescription("Update notification settings.");
@@ -125,20 +131,55 @@ let settingsCommandBuilder = new SlashCommandBuilder()
 import SettingsStandings from "./commands/settings-standings.js";
 import SettingsSummaries from "./commands/settings-summaries.js";
 import SettingsMatchEvents from "./commands/settings-match-events.js";
+import SettingsInjuries from "./commands/settings-injuries.js";
+import SettingsLineups from "./commands/settings-lineup.js";
 
 const SettingsMatchEventsInstance = new SettingsMatchEvents(client);
 const SettingsStandingsInstance = new SettingsStandings(client);
 const SettingsSummariesInstance = new SettingsSummaries(client);
+const SettingsInjuriesInstance = new SettingsInjuries(client);
+const SettingsLineupInstance = new SettingsLineups(client);
 
 settingsCommandBuilder = SettingsStandingsInstance.buildSlashOptions(settingsCommandBuilder);
 settingsCommandBuilder = SettingsMatchEventsInstance.buildSlashOptions(settingsCommandBuilder);
 settingsCommandBuilder = SettingsSummariesInstance.buildSlashOptions(settingsCommandBuilder);
+settingsCommandBuilder = SettingsInjuriesInstance.buildSlashOptions(settingsCommandBuilder);
+settingsCommandBuilder = SettingsLineupInstance.buildSlashOptions(settingsCommandBuilder);
+
 slashCommands.push(settingsCommandBuilder.toJSON());
+
+// Help Command
+import Help from "./commands/help.js";
+const HelpInstance = new Help(client);
+slashCommands.push(HelpInstance.buildSlashOptions().toJSON());
+
+// Teaminfo Command
+import TeamInfo from "./commands/teaminfo.js";
+const TeamInfoInstance = new TeamInfo(client);
+slashCommands.push(TeamInfoInstance.buildSlashOptions().toJSON());
+
+// Teams Command
+import Teams from "./commands/teams.js";
+const TeamsInstance = new Teams(client);
+slashCommands.push(TeamsInstance.buildSlashOptions().toJSON());
 
 // Registering Commands
 client.commands[PingInstance.name] = PingInstance;
 client.commands[LagueInstance.name] = LagueInstance;
-
+client.commands[FollowLeagueInstance.name] = FollowLeagueInstance;
+client.commands[FollowTeamInstance.name] = FollowTeamInstance;
+client.commands[UnfollowLeagueInstance.name] = UnfollowLeagueInstance;
+client.commands[UnfollowTeamInstance.name] = UnfollowTeamInstance;
+client.commands[NotificationUserInstance.name] = NotificationUserInstance;
+client.commands[NotificationServerInstance.name] = NotificationServerInstance;
+client.commands[SettingsMatchEventsInstance.name] = SettingsMatchEventsInstance;
+client.commands[SettingsStandingsInstance.name] = SettingsStandingsInstance;
+client.commands[SettingsSummariesInstance.name] = SettingsSummariesInstance;
+client.commands[SettingsInjuriesInstance.name] = SettingsInjuriesInstance;
+client.commands[SettingsLineupInstance.name] = SettingsLineupInstance;
+client.commands[HelpInstance.name] = HelpInstance;
+client.commands[TeamInfoInstance.name] = TeamInfoInstance;
+client.commands[TeamsInstance.name] = TeamsInstance;
 
 console.log(`Started refreshing ${slashCommands.length} application (/) commands.`);
 rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.TEST_GUILD), {

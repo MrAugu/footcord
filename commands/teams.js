@@ -8,7 +8,7 @@ export default class Teams extends Command {
 
 	buildSlashOptions() {
 		return new SlashCommandBuilder()
-			.setName("league")
+			.setName("teams")
 			.setDescription("List all teams in a specific league.")
 			.addStringOption(option =>
 				option.setName("name")
