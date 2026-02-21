@@ -1,5 +1,12 @@
 {
   "eslint.enable": true,
   "eslint.run": "onType",
-  "eslint.validate": ["javascript", "javascriptreact"]
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact"
+  ],
+"editor.autoIndentOnPaste": true,
+"editor.fontSize": 14,
+"editor.tabSize": 4,
+"editor.detectIndentation": false
 }

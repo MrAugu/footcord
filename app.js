@@ -1,11 +1,13 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { Client, Events, GatewayIntentBits, REST, Routes, ActivityType, SlashCommandBuilder } from "discord.js";
+import { Client, Events, GatewayIntentBits, ActivityType, SlashCommandBuilder } from "discord.js";
 import sql from "./utils/db.js";
 
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
 import path from "path";
+
+import logger from "./utils/winston.js";
 
 const client = new Client({
 	intents: [
@@ -31,7 +33,6 @@ const client = new Client({
 	}
 });
 
-const rest = new REST().setToken(process.env.DISCORD_TOKEN);
 const slashCommands = [];
 
 // Initializing gRPC client
@@ -52,18 +53,20 @@ const gRpcClient = new serviceProto.DataService(
 	grpc.credentials.createInsecure()
 );
 
+gRpcClient.waitForReady(Date.now() + 5000, (err) => {
+	if (err) {
+		logger.error("Failed to connect to gRPC server:", err);
+		process.exit(1);
+	} else {
+		logger.info("Successfully connected to gRPC server.");
+	}
+});
+
 client.gRpcClient = gRpcClient;
 
 // Data Caching -- to remove
 client.sql = sql;
 client.commands = {};
-client.footballCache = {
-	teams: [],
-	venues: [],
-	countries: [],
-	leagues: [],
-	players: []
-};
 
 // Events
 import ReadyEvent from "./events/ready.js";
@@ -181,43 +184,11 @@ client.commands[HelpInstance.name] = HelpInstance;
 client.commands[TeamInfoInstance.name] = TeamInfoInstance;
 client.commands[TeamsInstance.name] = TeamsInstance;
 
-console.log(`Started refreshing ${slashCommands.length} application (/) commands.`);
-rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.TEST_GUILD), {
-	body: slashCommands
-}).then((response) => console.log("LOG: Refreshed slash commands.", response.map(cmd => cmd.name)))
-	.catch(err => console.error("Error refreshing slash commands", err));
+client.slashCommandJson = slashCommands;
 
 client.once(Events.ClientReady, (readyClient) => ReadyEventInstance.run(readyClient));
 client.on(Events.InteractionCreate, (interaction) => InteractionCreateInstance.run(interaction));
 client.on(Events.Debug, (...args) => process.env.DEBUG ? console.log(...args) : {});
 client.on(Events.Error, (...args) => console.error("Error Event Received", ...args));
-
-(client.sql`SELECT * FROM teams;`).then(data => {
-	for (const row of data) {
-		client.footballCache.teams.push(row);
-	}
-	console.log(`LOG: Cached ${data.length} teams from database.`);
-});
-
-(client.sql`SELECT * FROM venues;`).then(data => {
-	for (const row of data) {
-		client.footballCache.venues.push(row);
-	}
-	console.log(`LOG: Cached ${data.length} venues from database.`);
-});
-
-(client.sql`SELECT * FROM leagues;`).then(data => {
-	for (const row of data) {
-		client.footballCache.leagues.push(row);
-	}
-	console.log(`LOG: Cached ${data.length} leagues from database.`);
-});
-
-(client.sql`SELECT * FROM countries;`).then(data => {
-	for (const row of data) {
-		client.footballCache.countries.push(row);
-	}
-	console.log(`LOG: Cached ${data.length} countries from database.`);
-});
 
 client.login(process.env.DISCORD_TOKEN);

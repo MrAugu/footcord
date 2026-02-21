@@ -27,5 +27,8 @@
     "string-similarity": "^4.0.4",
     "winston": "^3.19.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.3.0"
+  }
 }
