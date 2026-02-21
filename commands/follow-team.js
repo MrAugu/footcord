@@ -34,31 +34,60 @@ export default class FollowTeam extends Command {
 
 		try {
 			const existingFollow = await this.client.sql`SELECT * FROM team_notification_preferences WHERE target_type = 'guild' AND target_id = ${interaction.guild.id} AND teamid = ${teamId}::int4`;
-			if (existingFollow.length > 0) return interaction.reply(":x: This server is already following the team.")
+			if (existingFollow.length > 0) return interaction.reply(`${process.env.CROSS_EMOJI} This server is already following the team.`)
 				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		} catch (error) {
 			this.logger.error("Database error when checking existing team follow", { error });
 
-			return interaction.reply(":warning: Something went wrong when trying to follow the team. Please try again later.")
+			return interaction.reply(`${process.env.WARNING_EMOJI} Something went wrong when trying to follow the team. Please contact us.\n${process.env.SUPPORT_GUILD_INVITE}`)
 				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		}
 
+		const user_preference_json = {
+			"lineup": {
+				"enabled": true,
+				"channel": channelId
+			},
+			"injuries": {
+				"enabled": true,
+				"channel": channelId
+			},
+			"events": {
+				"goal": true,
+				"var": true,
+				"red_card": true,
+				"yellow_card": true,
+				"substitution": false,
+				"match_start": true,
+				"match_end": true,
+				"channel": channelId
+			},
+			"summary": {
+				"prematch": true,
+				"halftime": true,
+				"postmatch": true,
+				"channel": channelId
+			},
+			"match_reminder": {
+				"enabled": true,
+				"time": "1h",
+				"channel": channelId,
+				"role_mentions": []
+			}
+		};
+
 		try {
 			await this.client.sql`
-				INSERT INTO team_notification_preferences (target_type, target_id, teamid, lineup_notifications_enabled, lineup_notifications_channel,
-				injured_notifications_enabled, injured_notifications_channel, event_goal_enabled, event_red_card_enabled, event_yellow_card_enabled,
-				event_substitution_enabled, event_match_start_enabled,
-				event_match_end_enabled, event_channel, summary_prematch_enabled, summary_half_time_enabled, summary_postmatch_enabled, summary_channel, silenced)
-				VALUES ('guild', ${interaction.guild.id}, ${teamId}, true, ${channelId}, true, ${channelId}, true, true, true,
-				true, true, true, ${channelId}, true, true, true, ${channelId}, false)
+				INSERT INTO team_notification_preferences (target_type, target_id, teamid, silenced, preferences)
+				VALUES ('guild', ${interaction.guild.id}, ${teamId}, false, ${user_preference_json})
 			`;
 
-			return interaction.reply(":white_check_mark: Successfully followed the team! You will start receiving updates in the selected channel.")
+			return interaction.reply(`${process.env.WARNING_EMOJI} Something went wrong when trying to follow the team. Please contact us.\n${process.env.SUPPORT_GUILD_INVITE}`)
 				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		} catch (error) {
 			this.logger.error("Database error when inserting team follow", { error });
 
-			return interaction.reply(":warning: Something went wrong when trying to follow the team. Please try again later.")
+			return interaction.reply(`${process.env.WARNING_EMOJI} Something went wrong when trying to follow the team. Please contact us.\n${process.env.SUPPORT_GUILD_INVITE}`)
 				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		}
 	}

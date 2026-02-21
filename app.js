@@ -191,7 +191,7 @@ client.slashCommandJson = slashCommands;
 
 client.once(Events.ClientReady, (readyClient) => ReadyEventInstance.run(readyClient));
 client.on(Events.InteractionCreate, (interaction) => InteractionCreateInstance.run(interaction));
-client.on(Events.Debug, (message) => logger.debug(`Discord.js debug text: ${message}`));
+client.on(Events.Debug, (message) => logger.silly(`Discord.js debug text: ${message}`));
 client.on(Events.Error, (...args) => logger.error("Discord.js client error event", { ...args }));
 
 client.login(process.env.DISCORD_TOKEN);
