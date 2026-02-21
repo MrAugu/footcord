@@ -31,14 +31,16 @@ export default class FollowTeam extends Command {
 	async run(interaction) {
 		const teamId = interaction.options.getInteger("name");
 		const channelId = interaction.options.getChannel("channel").id;
-		console.log(`SELECT * FROM team_notification_preferences WHERE target_type = 'guild' AND target_id = ${interaction.guild.id} AND teamid = ${teamId}::int4`);
+
 		try {
 			const existingFollow = await this.client.sql`SELECT * FROM team_notification_preferences WHERE target_type = 'guild' AND target_id = ${interaction.guild.id} AND teamid = ${teamId}::int4`;
-			if (existingFollow.length > 0) return interaction.reply(":x: This server is already following the team.").catch(()=>{});
+			if (existingFollow.length > 0) return interaction.reply(":x: This server is already following the team.")
+				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		} catch (error) {
-			console.log("ERROR: Database error when checking existing team follow", error);
+			this.logger.error("Database error when checking existing team follow", { error });
 
-			return interaction.reply(":warning: Something went wrong when trying to follow the team. Please try again later.").catch(()=>{});
+			return interaction.reply(":warning: Something went wrong when trying to follow the team. Please try again later.")
+				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		}
 
 		try {
@@ -51,13 +53,13 @@ export default class FollowTeam extends Command {
 				true, true, true, ${channelId}, true, true, true, ${channelId}, false)
 			`;
 
-			return interaction.reply(":white_check_mark: Successfully followed the team! You will start receiving updates in the selected channel.").catch(()=>{});
+			return interaction.reply(":white_check_mark: Successfully followed the team! You will start receiving updates in the selected channel.")
+				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		} catch (error) {
-			console.log("ERROR: Database error when inserting team follow", error);
+			this.logger.error("Database error when inserting team follow", { error });
 
-			return interaction.reply(":warning: Something went wrong when trying to follow the team. Please try again later.").catch(()=>{});
+			return interaction.reply(":warning: Something went wrong when trying to follow the team. Please try again later.")
+				.catch(error => this.handleError("Follow Team Command - Reply Error", error));
 		}
-
-		await interaction.reply("Pong!");
 	}
 }

@@ -2,11 +2,9 @@ import dotenv from "dotenv";
 dotenv.config();
 import { Client, Events, GatewayIntentBits, ActivityType, SlashCommandBuilder } from "discord.js";
 import sql from "./utils/db.js";
-
 import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
 import path from "path";
-
 import logger from "./utils/winston.js";
 
 const client = new Client({
@@ -37,7 +35,6 @@ const slashCommands = [];
 
 // Initializing gRPC client
 const PROTO_PATH = path.resolve("service.proto");
-
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 	keepCase: true,
 	longs: String,
@@ -45,15 +42,13 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 	defaults: true,
 	oneofs: true
 });
-
 const serviceProto = grpc.loadPackageDefinition(packageDefinition).DataService;
-
 const gRpcClient = new serviceProto.DataService(
 	process.env.DATA_SERVICE_HOSTNAME || "localhost:50051",
 	grpc.credentials.createInsecure()
 );
 
-gRpcClient.waitForReady(Date.now() + 5000, (err) => {
+gRpcClient.waitForReady(Date.now() + 3000, (err) => {
 	if (err) {
 		logger.error("Failed to connect to gRPC server:", err);
 		process.exit(1);
@@ -63,8 +58,6 @@ gRpcClient.waitForReady(Date.now() + 5000, (err) => {
 });
 
 client.gRpcClient = gRpcClient;
-
-// Data Caching -- to remove
 client.sql = sql;
 client.commands = {};
 
@@ -188,7 +181,7 @@ client.slashCommandJson = slashCommands;
 
 client.once(Events.ClientReady, (readyClient) => ReadyEventInstance.run(readyClient));
 client.on(Events.InteractionCreate, (interaction) => InteractionCreateInstance.run(interaction));
-client.on(Events.Debug, (...args) => process.env.DEBUG ? console.log(...args) : {});
-client.on(Events.Error, (...args) => console.error("Error Event Received", ...args));
+client.on(Events.Debug, (message) => logger.debug(`Discord.js debug text: ${message}`));
+client.on(Events.Error, (...args) => logger.error("Discord.js client error event", { ...args }));
 
 client.login(process.env.DISCORD_TOKEN);

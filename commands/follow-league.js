@@ -34,11 +34,13 @@ export default class FollowLeague extends Command {
 
 		try {
 			const existingFollow = await this.client.sql`SELECT * FROM league_notification_preferences WHERE target_id = ${interaction.guild.id} AND target_type = 'guild' AND leagueid = ${leagueId}`;
-			if (existingFollow.length > 0) return interaction.reply(":x: This server is already following the league. Please unfollow the current league before following a new one.").catch(()=>{});
+			if (existingFollow.length > 0) return interaction.reply(":x: This server is already following the league. Please unfollow the current league before following a new one.")
+				.catch(error => this.handleError("Follow League Command - Reply Error", error));
 		} catch (error) {
-			console.log("ERROR: Database error when checking existing league follow", error);
+			this.logger.error("Database error when checking existing league follow", { error });
 
-			return interaction.reply(":warning: Something went wrong when trying to follow the league. Please try again later.").catch(()=>{});
+			return interaction.reply(":warning: Something went wrong when trying to follow the league. Please try again later.")
+				.catch(error => this.handleError("Follow League Command - Reply Error", error));
 		}
 
 		try {
@@ -47,15 +49,13 @@ export default class FollowLeague extends Command {
 		VALUES ('guild', ${interaction.guild.id}, ${leagueId}, 'daily', ${channelId}, false)
 		`;
 
-			return interaction.reply(":white_check_mark: Successfully followed the league! You will start receiving updates in the selected channel.").catch(()=>{});
+			return interaction.reply(":white_check_mark: Successfully followed the league! You will start receiving updates in the selected channel.")
+				.catch(error => this.handleError("Follow League Command - Reply Error", error));
 		} catch (error) {
-			console.log("ERROR: Database error when inserting league follow", error);
+			this.logger.error("Database error when inserting league follow", { error });
 
-			return interaction.reply(":warning: Something went wrong when trying to follow the league. Please try again later.").catch(()=>{});
+			return interaction.reply(":warning: Something went wrong when trying to follow the league. Please try again later.")
+				.catch(this.handleError("Follow League Command - Reply Error", error));
 		}
-
-
-
-		return await interaction.reply("Pong!").catch(()=>{});
 	}
 }
