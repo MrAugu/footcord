@@ -6,6 +6,8 @@ import grpc from "@grpc/grpc-js";
 import protoLoader from "@grpc/proto-loader";
 import path from "path";
 import logger from "./utils/winston.js";
+import { Kafka } from "kafkajs";
+import kafkaHandler from "./utils/kafka.js";
 
 const client = new Client({
 	intents: [
@@ -56,6 +58,14 @@ gRpcClient.waitForReady(Date.now() + 3000, (err) => {
 		logger.info("Successfully connected to gRPC server.");
 	}
 });
+
+const kafka = new Kafka({
+	clientId: `bot-${process.env.SHARDS}`,
+	brokers: [process.env.KAFKA_BROKER]
+});
+
+const consumer = kafka.consumer({ groupId: `shard-${process.env.SHARDS}` });
+kafkaHandler(client, consumer);
 
 client.gRpcClient = gRpcClient;
 client.sql = sql;
